@@ -1,6 +1,7 @@
 package playground.akka
 
 import akka.actor.{Actor, ActorRef, ActorSystem, Props}
+import playground.akka.Reaper.WatchMe
 
 
 case object PingMessage
@@ -48,10 +49,15 @@ class Pong extends Actor {
 }
 
 
-object PingPongTest extends App {
+object PingPong extends App {
   val system = ActorSystem("PingPongSystem")
+  // Build our reaper
+  val reaper = system.actorOf(Props(new ProductionReaper()))
   val pong: ActorRef = system.actorOf(Props[Pong], name = "pong")
   val ping: ActorRef = system.actorOf(Props(new Ping(pong)), name = "ping")
+  // watch the reaper
+  reaper ! WatchMe(pong)
+  reaper ! WatchMe(ping)
   // start them going
   ping ! StartMessage
 }
