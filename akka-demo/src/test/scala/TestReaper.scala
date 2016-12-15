@@ -1,7 +1,8 @@
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
-import org.scalatest.{BeforeAndAfterAll, MustMatchers, WordSpec, WordSpecLike}
+import org.scalatest.{BeforeAndAfterAll, MustMatchers, WordSpecLike}
 import playground.akka.Reaper
+import playground.akka.Reaper.WatchMe
 
 // Our test reaper.  Sends the snooper a message when all
 // the souls have been reaped
@@ -14,7 +15,6 @@ class ReaperSpec extends TestKit(ActorSystem("ReaperSpec"))
   with WordSpecLike
   with BeforeAndAfterAll
   with MustMatchers {
-  import playground.akka.Reaper._
 
   override def afterAll() {
     system.terminate()
