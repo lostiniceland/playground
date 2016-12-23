@@ -6,8 +6,6 @@ import playground.akka.Reaper.WatchMe
 
 case object PingMessage
 case object PongMessage
-case object StartMessage
-case object StopMessage
 
 
 class Ping(pong: ActorRef) extends Actor {
