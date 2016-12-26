@@ -39,7 +39,7 @@ class Pong extends Actor {
 }
 
 
-object PingPong extends App {
+object PingPongApp extends App {
   val system = ActorSystem("PingPongSystem")
   // Build our reaper
   val reaper = system.actorOf(Props(new ProductionReaper()))
