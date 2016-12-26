@@ -34,13 +34,15 @@ class Kafka extends Actor {
       producer.send(new ProducerRecord[String, String]("test", message.body))
 
     case StopMessage =>
-      println("Stopping Kafka-Consumer")
+      println("Stopping Kafka-Producer")
       context.stop(consumer)
       context.stop(self)
   }
 }
 
 private class Consumer extends Actor {
+
+  object ConsumeNext
 
   val consumer: KafkaConsumer [String, String] = {
       val props = new Properties()
@@ -50,22 +52,26 @@ private class Consumer extends Actor {
       props.put("value.deserializer", classOf[StringDeserializer].getName)
       new KafkaConsumer(props)
     }
-
   val topics: util.List[String] = util.Arrays.asList("test")
 
-  override def receive: Receive = {
+  override def receive: Receive = inactive
+
+  def inactive: Receive = {
     case StartMessage =>
-      try {
-        consumer.subscribe(topics)
-        while (!Thread.currentThread().isInterrupted) {
-          val records: ConsumerRecords[String, String] = consumer.poll(500)
-          records.forEach((rec) => println(s"Message '${rec.value()}' reived"))
-        }
-      } catch {
-        case e: Exception => e.printStackTrace()
-      } finally {
-        consumer.close()
-      }
+      consumer.subscribe(topics)
+      context.become(active)
+      self ! ConsumeNext
+  }
+
+  def active: Receive = {
+    case ConsumeNext =>
+      val records: ConsumerRecords[String, String] = consumer.poll(500)
+      records.forEach((rec) => println(s"Message '${rec.value()}' received"))
+      self ! ConsumeNext
+    case StopMessage =>
+      println("Stopping Kafka-Consumer")
+      consumer.close()
+      context.become(inactive)
   }
 }
 
@@ -80,8 +86,7 @@ object KafkaApp extends App {
   reaper ! WatchMe(kafka)
   // start them going
   kafka ! StartMessage
-  kafka ! SendMessage("Hello")
-  kafka ! SendMessage("World")
+  println("Type message in console (terminates when empty)")
   Iterator.continually(StdIn.readLine).takeWhile(_.nonEmpty).foreach(line => kafka ! SendMessage(line))
   kafka ! StopMessage
 }
