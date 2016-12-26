@@ -11,6 +11,7 @@ import playground.akka.Reaper.WatchMe
 import scala.io.StdIn
 
 case class SendMessage (body: String)
+private case object ConsumerStopped
 
 class Kafka extends Actor {
 
@@ -34,9 +35,11 @@ class Kafka extends Actor {
       producer.send(new ProducerRecord[String, String]("test", message.body))
 
     case StopMessage =>
-      println("Stopping Kafka-Producer")
-      context.stop(consumer)
+      consumer ! StopMessage
+
+    case ConsumerStopped =>
       context.stop(self)
+      println("Kafka-Producer stopped")
   }
 }
 
@@ -69,9 +72,10 @@ private class Consumer extends Actor {
       records.forEach((rec) => println(s"Message '${rec.value()}' received"))
       self ! ConsumeNext
     case StopMessage =>
-      println("Stopping Kafka-Consumer")
-      consumer.close()
       context.become(inactive)
+      consumer.close()
+      println("Kafka-Consumer stopped")
+      sender() ! ConsumerStopped
   }
 }
 
