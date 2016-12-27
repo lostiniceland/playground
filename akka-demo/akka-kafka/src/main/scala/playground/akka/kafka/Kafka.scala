@@ -1,18 +1,17 @@
-package playground.akka
+package playground.akka.kafka
 
 import java.util
 import java.util.Properties
 
-import akka.actor.{Actor, ActorRef, ActorSystem, Props}
+import akka.actor.{Actor, ActorRef, Props}
 import com.typesafe.scalalogging.Logger
 import org.apache.kafka.clients.consumer.{ConsumerRecords, KafkaConsumer}
 import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
 import org.apache.kafka.common.serialization.{StringDeserializer, StringSerializer}
-import playground.akka.Reaper.WatchMe
+import playground.akka.{StartMessage, StopMessage}
 
-import scala.io.StdIn
 
-case class SendMessage (body: String)
+case class KafkaMessage(body: String)
 private case object ConsumerStopped
 
 class Kafka extends Actor {
@@ -28,19 +27,19 @@ class Kafka extends Actor {
     new KafkaProducer(props)
   }
 
-  val consumer: ActorRef =  context.actorOf(Props[Consumer])
+  val consumerActor: ActorRef =  context.actorOf(Props[Consumer])
 
   override def receive: Receive = {
 
     case StartMessage =>
       logger.info("Activating Kafka-Producer")
-      consumer.forward(StartMessage)
+      consumerActor.forward(StartMessage)
 
-    case message: SendMessage =>
+    case message: KafkaMessage =>
       producer.send(new ProducerRecord[String, String]("test", message.body))
 
     case StopMessage =>
-      consumer ! StopMessage
+      consumerActor ! StopMessage
 
     case ConsumerStopped =>
       context.stop(self)
@@ -89,17 +88,5 @@ private class Consumer extends Actor {
 
 
 
-object KafkaApp extends App {
-  val system = ActorSystem("KafkaSystem")
-  // Build our reaper
-  val reaper = system.actorOf(Props(new ProductionReaper()))
-  val kafka: ActorRef = system.actorOf(Props[Kafka])
-  // watch the reaper
-  reaper ! WatchMe(kafka)
-  // start them going
-  kafka ! StartMessage
-  println("Type message in console (terminates when empty)")
-  Iterator.continually(StdIn.readLine).takeWhile(_.nonEmpty).foreach(line => kafka ! SendMessage(line))
-  kafka ! StopMessage
-}
+
 

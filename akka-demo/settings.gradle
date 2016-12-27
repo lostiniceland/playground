@@ -1,2 +1,2 @@
-include 'akka-cluster', 'akka-simple'
+include 'akka-cluster', 'akka-kafka'
 
