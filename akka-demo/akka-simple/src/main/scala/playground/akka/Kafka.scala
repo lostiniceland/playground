@@ -4,16 +4,20 @@ import java.util
 import java.util.Properties
 
 import akka.actor.{Actor, ActorRef, ActorSystem, Props}
+import com.typesafe.scalalogging.Logger
 import org.apache.kafka.clients.consumer.{ConsumerRecords, KafkaConsumer}
 import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
 import org.apache.kafka.common.serialization.{StringDeserializer, StringSerializer}
 import playground.akka.Reaper.WatchMe
+
 import scala.io.StdIn
 
 case class SendMessage (body: String)
 private case object ConsumerStopped
 
 class Kafka extends Actor {
+
+  val logger = Logger(classOf[Kafka])
 
   val producer: KafkaProducer[String, String] = {
     val props = new Properties()
@@ -29,6 +33,7 @@ class Kafka extends Actor {
   override def receive: Receive = {
 
     case StartMessage =>
+      logger.info("Activating Kafka-Producer")
       consumer.forward(StartMessage)
 
     case message: SendMessage =>
@@ -39,13 +44,15 @@ class Kafka extends Actor {
 
     case ConsumerStopped =>
       context.stop(self)
-      println("Kafka-Producer stopped")
+      logger.info("Kafka-Producer stopped")
   }
 }
 
 private class Consumer extends Actor {
 
   object ConsumeNext
+
+  val logger = Logger(classOf[Consumer])
 
   val consumer: KafkaConsumer [String, String] = {
       val props = new Properties()
@@ -61,6 +68,7 @@ private class Consumer extends Actor {
 
   def inactive: Receive = {
     case StartMessage =>
+      logger.info("Activating Kafka-Consumer")
       consumer.subscribe(topics)
       context.become(active)
       self ! ConsumeNext
@@ -74,7 +82,7 @@ private class Consumer extends Actor {
     case StopMessage =>
       context.become(inactive)
       consumer.close()
-      println("Kafka-Consumer stopped")
+      logger.info("Kafka-Consumer stopped")
       sender() ! ConsumerStopped
   }
 }
