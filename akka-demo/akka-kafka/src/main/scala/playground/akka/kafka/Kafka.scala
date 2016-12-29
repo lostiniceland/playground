@@ -4,7 +4,6 @@ import java.util
 import java.util.Properties
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
-import com.typesafe.scalalogging.Logger
 import org.apache.kafka.clients.consumer.{ConsumerRecords, KafkaConsumer}
 import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
 import org.apache.kafka.common.serialization.{StringDeserializer, StringSerializer}
@@ -57,7 +56,7 @@ private class Consumer extends Actor with ActorLogging {
       props.put("value.deserializer", classOf[StringDeserializer].getName)
       new KafkaConsumer(props)
     }
-  val topics: util.List[String] = util.Arrays.asList("test")
+  val topics: util.List[String] = util.Arrays.asList("test", "logs")
 
   override def receive: Receive = inactive
 
@@ -72,6 +71,7 @@ private class Consumer extends Actor with ActorLogging {
   def active: Receive = {
     case ConsumeNext =>
       val records: ConsumerRecords[String, String] = consumer.poll(500)
+      log.info(s"Consumed '${records.count()}' messages from Kafka.")
       records.forEach((rec) => println(s"Message '${rec.value()}' received"))
       self ! ConsumeNext
     case StopMessage =>
