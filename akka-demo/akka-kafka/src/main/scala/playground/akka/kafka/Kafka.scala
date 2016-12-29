@@ -3,7 +3,7 @@ package playground.akka.kafka
 import java.util
 import java.util.Properties
 
-import akka.actor.{Actor, ActorRef, Props}
+import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import com.typesafe.scalalogging.Logger
 import org.apache.kafka.clients.consumer.{ConsumerRecords, KafkaConsumer}
 import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
@@ -14,9 +14,8 @@ import playground.akka.{StartMessage, StopMessage}
 case class KafkaMessage(body: String)
 private case object ConsumerStopped
 
-class Kafka extends Actor {
+class Kafka extends Actor with ActorLogging {
 
-  val logger = Logger(classOf[Kafka])
 
   val producer: KafkaProducer[String, String] = {
     val props = new Properties()
@@ -31,7 +30,7 @@ class Kafka extends Actor {
   override def receive: Receive = {
 
     case StartMessage =>
-      logger.info("Activating Kafka-Producer")
+      log.info("Activating Kafka-Producer")
       consumerActor.forward(StartMessage)
 
     case message: KafkaMessage =>
@@ -42,15 +41,13 @@ class Kafka extends Actor {
 
     case ConsumerStopped =>
       context.stop(self)
-      logger.info("Kafka-Producer stopped")
+      log.info("Kafka-Producer stopped")
   }
 }
 
-private class Consumer extends Actor {
+private class Consumer extends Actor with ActorLogging {
 
   object ConsumeNext
-
-  val logger = Logger(classOf[Consumer])
 
   val consumer: KafkaConsumer [String, String] = {
       val props = new Properties()
@@ -66,7 +63,7 @@ private class Consumer extends Actor {
 
   def inactive: Receive = {
     case StartMessage =>
-      logger.info("Activating Kafka-Consumer")
+      log.info("Activating Kafka-Consumer")
       consumer.subscribe(topics)
       context.become(active)
       self ! ConsumeNext
@@ -80,7 +77,7 @@ private class Consumer extends Actor {
     case StopMessage =>
       context.become(inactive)
       consumer.close()
-      logger.info("Kafka-Consumer stopped")
+      log.info("Kafka-Consumer stopped")
       sender() ! ConsumerStopped
   }
 }
