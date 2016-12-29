@@ -19,6 +19,7 @@ object KafkaApp extends App {
   // start them going
   kafka ! StartMessage
   println("Type message in console (terminates when empty)")
+  kafka ! KafkaMessage("Hello World")
   Iterator.continually(StdIn.readLine).takeWhile(_.nonEmpty).foreach(line => kafka ! KafkaMessage(line))
   kafka ! StopMessage
 }
