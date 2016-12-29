@@ -23,7 +23,6 @@ class Kafka extends Actor {
     props.put("bootstrap.servers", "localhost:9092")
     props.put("key.serializer", classOf[StringSerializer].getName)
     props.put("value.serializer", classOf[StringSerializer].getName)
-    props.put("batch.size", "10")
     new KafkaProducer(props)
   }
 
