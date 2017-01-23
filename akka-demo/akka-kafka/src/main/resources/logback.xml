@@ -22,11 +22,17 @@
         <!-- bootstrap.servers is the only mandatory producerConfig -->
         <producerConfig>bootstrap.servers=localhost:9092</producerConfig>
 
+        <producerConfig>block.on.buffer.full=false</producerConfig>
         <!-- this is the fallback appender if kafka is not available. -->
         <appender-ref ref="STDOUT"/>
     </appender>
 
-    <root level="info">
+    <!-- Kafka-Client metadata-exchange may block, which is undesirable (and Akka will not start) -->
+    <appender name="asyncAppender" class="ch.qos.logback.classic.AsyncAppender">
         <appender-ref ref="kafkaAppender" />
+    </appender>
+
+    <root level="debug">
+        <appender-ref ref="asyncAppender" />
     </root>
 </configuration>
