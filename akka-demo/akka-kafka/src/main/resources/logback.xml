@@ -1,22 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!--
-<configuration>
-
-    <logger name="playground" level="INFO"/>
-
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
-        </encoder>
-    </appender>
-
-    <root level="WARN">
-        <appender-ref ref="STDOUT" />
-    </root>
-</configuration>
--->
-
-
 <configuration>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -39,15 +21,12 @@
         <!-- producer configs are documented here: https://kafka.apache.org/documentation.html#newproducerconfigs -->
         <!-- bootstrap.servers is the only mandatory producerConfig -->
         <producerConfig>bootstrap.servers=localhost:9092</producerConfig>
-        <producerConfig>key.serializer=org.apache.kafka.common.serialization.StringSerializer</producerConfig>
-        <producerConfig>value.serializer=org.apache.kafka.common.serialization.StringSerializer</producerConfig>
-        <producerConfig>client.id=${HOSTNAME}-${CONTEXT_NAME}-logback-relaxed</producerConfig>
-        <producerConfig>max.block.ms=1000</producerConfig>
+
         <!-- this is the fallback appender if kafka is not available. -->
         <appender-ref ref="STDOUT"/>
     </appender>
 
-    <root level="debug">
+    <root level="info">
         <appender-ref ref="kafkaAppender" />
     </root>
 </configuration>
