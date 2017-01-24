@@ -56,7 +56,7 @@ private class Consumer extends Actor with ActorLogging {
       props.put("value.deserializer", classOf[StringDeserializer].getName)
       new KafkaConsumer(props)
     }
-  val topics: util.List[String] = util.Arrays.asList("test", "logs")
+  val topics: util.List[String] = util.Arrays.asList("test")
 
   override def receive: Receive = inactive
 
