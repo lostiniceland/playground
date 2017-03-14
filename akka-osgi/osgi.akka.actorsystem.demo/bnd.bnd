@@ -1,0 +1,7 @@
+-buildpath: \
+	com.typesafe.akka.actor,\
+	org.scala-lang.scala-library
+
+Include-Resource: resources
+
+DynamicImport-Package: akka.actor.*

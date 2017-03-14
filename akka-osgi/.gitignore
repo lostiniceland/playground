@@ -1,0 +1,4 @@
+.gradle/
+/generated/
+bin/
+cnf/cache/
