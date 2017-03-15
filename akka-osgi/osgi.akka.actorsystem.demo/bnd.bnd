@@ -1,6 +1,9 @@
 -buildpath: \
 	com.typesafe.akka.actor,\
-	org.scala-lang.scala-library
+	org.scala-lang.scala-library,\
+	com.typesafe.config,\
+    org.scala-lang.modules.scala-java8-compat
+
 
 Include-Resource: resources
 
