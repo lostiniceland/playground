@@ -29,8 +29,27 @@ ext.cnf = rootProject.project(bnd_cnf)
 subprojects {
   def bndProject = bndWorkspace.getProject(name)
   if (bndProject != null) {
-    plugins.apply 'scala'
     plugins.apply 'biz.aQute.bnd'
+
+    repositories{
+      mavenCentral()
+      mavenLocal()
+    }
+    plugins.apply 'scala'
+    sourceSets {
+      main {
+          scala.srcDirs = java.srcDirs
+      }
+      test {
+          scala.srcDirs = java.srcDirs
+      }
+    }
+    compileScala {
+      dependsOn compileJava.dependsOn
+    }
+    compileTestScala {
+      dependsOn compileTestJava.dependsOn
+    }
   }
 
 }
