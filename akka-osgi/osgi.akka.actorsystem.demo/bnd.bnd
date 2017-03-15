@@ -4,7 +4,8 @@
 	com.typesafe.config,\
     org.scala-lang.modules.scala-java8-compat
 
+Private-Package: playground.akka.*
 
-Include-Resource: resources
+-includeresource: resources
 
 DynamicImport-Package: akka.actor.*
