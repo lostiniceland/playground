@@ -32,8 +32,8 @@ subprojects {
     plugins.apply 'biz.aQute.bnd'
 
     repositories{
-      mavenCentral()
       mavenLocal()
+      mavenCentral()
     }
     plugins.apply 'scala'
     sourceSets {
