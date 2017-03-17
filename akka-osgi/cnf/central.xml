@@ -11,6 +11,11 @@
 		<version.scala>2.12.1</version.scala>
 		<version.akka>2.4.17</version.akka>
 		<version.felix>5.6.2</version.felix>
+		<version.felix-configadmin>1.8.14</version.felix-configadmin>
+		<version.felix-fileinstall>3.5.8</version.felix-fileinstall>
+		<version.felix-scr>2.0.8</version.felix-scr>
+		<version.felix-webconsole>4.3.0</version.felix-webconsole>
+		<version.felix-webconsole-plugins-ds>2.0.6</version.felix-webconsole-plugins-ds>
 	</properties>
 
 	<dependencies>
@@ -37,7 +42,7 @@
 		<dependency>
 			<groupId>org.apache.felix</groupId>
 			<artifactId>org.apache.felix.scr</artifactId>
-			<version>2.0.8</version>
+			<version>${version.felix-scr}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.scala-lang</groupId>
@@ -57,7 +62,23 @@
 		<dependency>
 			<groupId>org.apache.felix</groupId>
 			<artifactId>org.apache.felix.configadmin</artifactId>
-			<version>1.8.14</version>
+			<version>${version.felix-configadmin}</version>
+		</dependency>
+		<!-- configuration -->
+		<dependency>
+			<groupId>org.apache.felix</groupId>
+			<artifactId>org.apache.felix.fileinstall</artifactId>
+			<version>${version.felix-fileinstall}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.felix</groupId>
+			<artifactId>org.apache.felix.webconsole.plugins.ds</artifactId>
+			<version>>${version.felix-webconsole-plugins-ds}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.felix</groupId>
+			<artifactId>org.apache.felix.webconsole</artifactId>
+			<version>${version.felix-webconsole}</version>
 		</dependency>
 		<!-- debugging -->
 		<dependency>

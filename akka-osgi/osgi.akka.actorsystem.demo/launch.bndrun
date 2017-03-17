@@ -4,9 +4,14 @@
 -runproperties: felix.log.level=3
 -runee: JavaSE-1.8
 
+-runvm: -Dfelix.fileinstall.dir=../configuration/config-admin\n\
+	-Dfelix.fileinstall.noInitialDelay=true\n\
+	-Dfelix.fileinstall.poll=1000
+
 -runrequire:\
     osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.shell)',\
 	osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.command)',\
+	osgi.identity;filter:='(osgi.identity=org.apache.felix.fileinstall)',\
 	bundle:(symbolicname=com.typesafe.akka.actor),\
 	bundle:(symbolicname=com.typesafe.akka.osgi),\
 	bundle:(symbolicname=org.scala-lang.scala-library),\
@@ -16,6 +21,7 @@
 
 -runbundles: \
     org.apache.felix.configadmin;version='[1.8.14,2.0.0)',\
+    org.apache.felix.fileinstall;version='[3.5.8,3.6.0)',\
     org.apache.felix.gogo.command;version='[1.0.2,2.0.0)',\
     org.apache.felix.gogo.runtime;version='[1.0.2,2.0.0)',\
     org.apache.felix.gogo.shell;version='[1.0.0,2.0.0)',\
@@ -25,4 +31,4 @@
 	com.typesafe.akka.actor;version='[2.4,3)',\
 	com.typesafe.akka.osgi;version='[2.4,3)',\
 	org.apache.felix.scr;version='[2.0.8,3)',\
-	osgi.akka.actorsystem.demo;version=snapshot,\
+	osgi.akka.actorsystem.demo;version=snapshot
