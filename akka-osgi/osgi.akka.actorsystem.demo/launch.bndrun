@@ -1,4 +1,8 @@
+-runsystemcapabilities: ${native_capability}
+-runsystempackages: sun.misc
 -runfw: org.apache.felix.framework;version='[5.6.2,5.7.0)'
+-runproperties: felix.log.level=3
+-runee: JavaSE-1.8
 
 -runrequire:\
     osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.shell)',\

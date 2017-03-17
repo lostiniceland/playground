@@ -2,11 +2,14 @@ package playground.akka
 
 
 import akka.actor.{Actor, ActorRef, ActorSystem, Props, Terminated}
+import akka.osgi.OsgiActorSystemFactory
+import com.typesafe.config.ConfigFactory
+import org.osgi.framework.BundleContext
 import org.osgi.service.component.annotations.{Activate, Component, Deactivate, Reference}
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
-import scala.concurrent.ExecutionContext.Implicits.global
 
 
 case class Continue()
@@ -17,36 +20,46 @@ class ActorSystemService () {
 
   private var system : ActorSystem = _
 
-//  @Activate
-//  def activate(){
-//    system = ActorSystem("KafkaSystem")
-//    println("ActorSystem started")
-//  }
-//
-//  @Deactivate
-//  def deactivate () {
-//    val x : Future[Terminated] = system.terminate()
-//    x.onComplete {
-//      case Success(_) => system = null; println("ActorSystem stopped")
-//      case Failure(e) => e.printStackTrace()
-//    }
-//  }
-
   @Activate
-  def activate(){
-    val actor : ActorRef = system.actorOf(Props[ConsumingActor])
-    actor ! Continue
+  def activate(bundleContext: BundleContext) {
+    try {
+      // load default-config "application.conf"
+      val myConfig = ConfigFactory.load(getClass.getClassLoader)
+      system = OsgiActorSystemFactory(bundleContext, myConfig).createActorSystem("Test")
+      println("ActorSystem started")
+      val actor : ActorRef = system.actorOf(Props[ConsumingActor])
+      actor ! Continue
+    } catch {
+      case t:Throwable => t.printStackTrace()
+    }
   }
 
   @Deactivate
   def deactivate () {
-
+    if(system != null) {
+      val x: Future[Terminated] = system.terminate()
+      x.onComplete {
+        case Success(_) => system = null; println("ActorSystem stopped")
+        case Failure(e) => e.printStackTrace()
+      }
+    }
   }
 
-  @Reference
-  def bindActorSystem(actorSystem: ActorSystem): Unit ={
-    system = actorSystem
-  }
+//  @Activate
+//  def activate(){
+//    val actor : ActorRef = system.actorOf(Props[ConsumingActor])
+//    actor ! Continue
+//  }
+//
+//  @Deactivate
+//  def deactivate () {
+//
+//  }
+//
+//  @Reference
+//  def bindActorSystem(actorSystem: ActorSystem): Unit ={
+//    system = actorSystem
+//  }
 }
 
 
@@ -61,6 +74,7 @@ class ConsumingActor extends Actor {
         eventCount += 1
         outgoingActor ! Message("Event " + eventCount)
       }
+      Thread.sleep(500)
       self ! Continue
   }
 }

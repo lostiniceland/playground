@@ -7,6 +7,12 @@
 	<version>1.0.0</version>
 	<packaging>pom</packaging>
 
+	<properties>
+		<version.scala>2.12.1</version.scala>
+		<version.akka>2.4.17</version.akka>
+		<version.felix>5.6.2</version.felix>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.osgi</groupId>
@@ -26,7 +32,7 @@
 		<dependency>
 			<groupId>org.apache.felix</groupId>
 			<artifactId>org.apache.felix.framework</artifactId>
-			<version>5.6.2</version>
+			<version>${version.felix}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.felix</groupId>
@@ -36,17 +42,17 @@
 		<dependency>
 			<groupId>org.scala-lang</groupId>
 			<artifactId>scala-library</artifactId>
-			<version>2.12.1</version>
+			<version>${version.scala}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.typesafe.akka</groupId>
 			<artifactId>akka-actor_2.12</artifactId>
-			<version>2.4.17</version>
+			<version>${version.akka}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.typesafe.akka</groupId>
 			<artifactId>akka-osgi_2.12</artifactId>
-			<version>2.4.17</version>
+			<version>${version.akka}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.felix</groupId>
