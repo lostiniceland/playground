@@ -1,8 +1,10 @@
 -runsystemcapabilities: ${native_capability}
 
+-resolve.effective: active;skip:="osgi.service"
+
 -runsystempackages: sun.misc
 
--runee:					JavaSE-1.8
+-runee:	JavaSE-1.8
 
 -runblacklist.default:	\
 	osgi.identity;filter:='(osgi.identity=osgi.cmpn)', \

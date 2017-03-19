@@ -8,6 +8,7 @@ import akka.osgi.OsgiActorSystemFactory
 import com.typesafe.config.ConfigFactory
 import org.osgi.framework.{BundleContext, ServiceRegistration}
 import org.osgi.service.component.annotations._
+import org.osgi.service.metatype.annotations.Designate
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -29,7 +30,8 @@ case class Continue()
 case class Message(body: String)
 
 
-@Component(configurationPolicy=ConfigurationPolicy.REQUIRE, configurationPid = Array("osgi.akka.actorsystem.messagehandler"))
+@Component(configurationPolicy=ConfigurationPolicy.REQUIRE)
+@Designate(ocd=classOf[AkkaConfiguration])
 class ActorSystemService () {
 
   private var system : ActorSystem = _
@@ -46,7 +48,7 @@ class ActorSystemService () {
       serviceProps.put("actorSystemName", system.name)
       serviceRegistration = bundleContext.registerService(classOf[ActorSystem],system,serviceProps.asInstanceOf[Dictionary[String, Any]])
 
-      val actor : ActorRef = system.actorOf(Props(new ConsumingActor(config.parallelThreads())))
+      val actor : ActorRef = system.actorOf(ConsumingActor.props(config.parallelThreads()))
       actor ! Continue
       println("ActorSystem started")
     } catch {
@@ -75,6 +77,10 @@ class ActorSystemService () {
 }
 
 
+object ConsumingActor {
+  def props(threadCount: Int) = Props(new ConsumingActor(threadCount))
+}
+
 class ConsumingActor(threadCount: Int) extends Actor {
 
   var outgoingActor: ActorRef = _
@@ -84,7 +90,7 @@ class ConsumingActor(threadCount: Int) extends Actor {
     if(threadCount > 1) {
       val consumerProvider : List[ActorRef] =
         for(_ <- 1.to(threadCount).toList) yield {
-          context.system.actorOf(Props[ConsumingActor]
+          context.system.actorOf(Props[OutgoingActor]
             .withDispatcher("consumer-dispatcher"))}
       outgoingActor = consumerProvider.head
     } else {
@@ -99,7 +105,7 @@ class ConsumingActor(threadCount: Int) extends Actor {
         eventCount += 1
         outgoingActor ! Message("Event " + eventCount)
       }
-//      Thread.sleep(2000)
+      Thread.sleep(2000)
       self ! Continue
   }
 }
@@ -109,7 +115,6 @@ class OutgoingActor extends Actor {
 
   override def receive: Receive = {
     case message: Message =>
-//      println(Thread.currentThread().getId + "Sending message to external system: " + message.body)
       println("Thread '%s' - Sending message: '%s'".format(Thread.currentThread().getId, message.body))
   }
 }

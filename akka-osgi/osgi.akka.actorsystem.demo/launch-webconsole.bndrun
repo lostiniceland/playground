@@ -1,15 +1,8 @@
--runsystemcapabilities: ${native_capability}
--runsystempackages: sun.misc
 -runfw: org.apache.felix.framework;version='[5.6.2,5.7.0)'
--runproperties: felix.log.level=3
--runee: JavaSE-1.8
-
-#osgi.identity;filter:='(osgi.identity=org.scala-lang.modules.scWala-java8-compat)',\
 
 -runrequires: \
 	osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.shell)',\
 	osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.command)',\
-	osgi.identity;filter:='(osgi.identity=org.apache.felix.fileinstall)',\
 	osgi.identity;filter:='(osgi.identity=org.scala-lang.scala-library)',\
 	osgi.identity;filter:='(osgi.identity=com.typesafe.akka.actor)',\
 	osgi.identity;filter:='(osgi.identity=com.typesafe.akka.osgi)',\
@@ -29,7 +22,6 @@
 	org.apache.commons.io;version='[2.2.0,2.2.1)',\
 	org.apache.felix.configadmin;version='[1.8.14,1.8.15)',\
 	org.apache.felix.eventadmin;version='[1.4.8,1.4.9)',\
-	org.apache.felix.fileinstall;version='[3.5.8,3.5.9)',\
 	org.apache.felix.gogo.command;version='[1.0.2,1.0.3)',\
 	org.apache.felix.gogo.runtime;version='[1.0.2,1.0.3)',\
 	org.apache.felix.gogo.shell;version='[1.0.0,1.0.1)',\

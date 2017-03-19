@@ -14,7 +14,6 @@
 		<version.felix-configadmin>1.8.14</version.felix-configadmin>
 		<version.felix-eventadmin>1.4.8</version.felix-eventadmin>
 		<version.felix-fileinstall>3.5.8</version.felix-fileinstall>
-		<version.felix-log>1.0.1</version.felix-log>
 		<version.felix-metatype>1.1.2</version.felix-metatype>
 		<version.felix-scr>2.0.8</version.felix-scr>
 		<version.felix-webconsole>4.3.0</version.felix-webconsole>
@@ -74,11 +73,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.felix</groupId>
-			<artifactId>org.apache.felix.log</artifactId>
-			<version>${version.felix-log}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.felix</groupId>
 			<artifactId>org.apache.felix.metatype</artifactId>
 			<version>${version.felix-metatype}</version>
 		</dependency>
@@ -104,19 +98,11 @@
 		    <artifactId>org.apache.felix.http.jetty</artifactId>
 		    <version>3.4.2</version>
 		</dependency>
-		<!--
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>3.1.0</version>
-		</dependency>
-		-->
 		<dependency>
 			<groupId>org.apache.felix</groupId>
 			<artifactId>org.apache.felix.http.servlet-api</artifactId>
 			<version>1.1.2</version>
 		</dependency>
-		
 		<dependency>
 		    <groupId>commons-fileupload</groupId>
 		    <artifactId>commons-fileupload</artifactId>
