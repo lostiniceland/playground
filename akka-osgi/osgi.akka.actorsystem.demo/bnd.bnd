@@ -9,6 +9,9 @@
 	com.typesafe.config,\
     org.scala-lang.modules.scala-java8-compat,\
     org.apache.felix.framework;version=5.6.1,\
+    org.apache.felix.configadmin,\
+    org.apache.felix.eventadmin,\
+    org.apache.felix.log,\
     org.apache.felix.gogo.shell,\
     org.apache.felix.gogo.command,\
     org.apache.felix.gogo.runtime
@@ -18,4 +21,5 @@ Private-Package: playground.akka.*
 -includeresource: resources
 -dsannotations: *
 
-
+Require-Capability: osgi.service;
+	filter:="(objectClass=org.osgi.service.cm.ConfigurationAdmin)";effective:=active

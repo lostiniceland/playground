@@ -8,7 +8,6 @@ import akka.osgi.OsgiActorSystemFactory
 import com.typesafe.config.ConfigFactory
 import org.osgi.framework.{BundleContext, ServiceRegistration}
 import org.osgi.service.component.annotations._
-import org.osgi.service.metatype.annotations.{AttributeDefinition, ObjectClassDefinition}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -30,7 +29,7 @@ case class Continue()
 case class Message(body: String)
 
 
-@Component(configurationPolicy = ConfigurationPolicy.REQUIRE, configurationPid = Array("osgi.akka.actorsystem.demo"))
+@Component(configurationPolicy=ConfigurationPolicy.REQUIRE, configurationPid = Array("osgi.akka.actorsystem.messagehandler"))
 class ActorSystemService () {
 
   private var system : ActorSystem = _
@@ -42,14 +41,14 @@ class ActorSystemService () {
       // load default-config "application.conf"
       val myConfig = ConfigFactory.load(getClass.getClassLoader)
       system = OsgiActorSystemFactory(bundleContext, myConfig).createActorSystem(config.actorSystemName())
-      println("ActorSystem started")
 
       val serviceProps = new Properties()
-      serviceProps.put("name", system.name)
+      serviceProps.put("actorSystemName", system.name)
       serviceRegistration = bundleContext.registerService(classOf[ActorSystem],system,serviceProps.asInstanceOf[Dictionary[String, Any]])
 
       val actor : ActorRef = system.actorOf(Props(new ConsumingActor(config.parallelThreads())))
       actor ! Continue
+      println("ActorSystem started")
     } catch {
       case t:Throwable =>
         t.printStackTrace()
@@ -78,18 +77,29 @@ class ActorSystemService () {
 
 class ConsumingActor(threadCount: Int) extends Actor {
 
-  val outgoingActor: ActorRef = context.actorOf(Props[OutgoingActor])
+  var outgoingActor: ActorRef = _
   var eventCount = 0
 
+  override def preStart {
+    if(threadCount > 1) {
+      val consumerProvider : List[ActorRef] =
+        for(_ <- 1.to(threadCount).toList) yield {
+          context.system.actorOf(Props[ConsumingActor]
+            .withDispatcher("consumer-dispatcher"))}
+      outgoingActor = consumerProvider.head
+    } else {
+      outgoingActor = context.actorOf(Props[OutgoingActor])
+    }
+  }
 
 
   override def receive: Receive = {
     case Continue =>
-      for(_ <- 1 to 5) {
+      for(_ <- 1 to 10) {
         eventCount += 1
         outgoingActor ! Message("Event " + eventCount)
       }
-      Thread.sleep(500)
+//      Thread.sleep(2000)
       self ! Continue
   }
 }
@@ -99,6 +109,7 @@ class OutgoingActor extends Actor {
 
   override def receive: Receive = {
     case message: Message =>
-      println("Sending message to external system: " + message.body)
+//      println(Thread.currentThread().getId + "Sending message to external system: " + message.body)
+      println("Thread '%s' - Sending message: '%s'".format(Thread.currentThread().getId, message.body))
   }
 }
