@@ -1,5 +1,4 @@
-package playground.akka
-
+package osgi.eventhandler.akka
 
 import java.util.{Dictionary, Properties}
 
@@ -9,6 +8,7 @@ import com.typesafe.config.ConfigFactory
 import org.osgi.framework.{BundleContext, ServiceRegistration}
 import org.osgi.service.component.annotations._
 import org.osgi.service.metatype.annotations.Designate
+import osgi.eventhandler.api.{Message, MessageBusService}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -27,8 +27,6 @@ import scala.util.{Failure, Success}
 
 
 case class Continue()
-case class Message(body: String)
-
 
 @Component(configurationPolicy=ConfigurationPolicy.REQUIRE)
 @Designate(ocd=classOf[AkkaConfiguration])
@@ -36,6 +34,7 @@ class ActorSystemService () {
 
   private var system : ActorSystem = _
   private var serviceRegistration : ServiceRegistration[ActorSystem] = _
+  private var messageBusService : MessageBusService = _
 
   @Activate
   def activate(config: AkkaConfiguration, bundleContext: BundleContext) {
@@ -48,7 +47,9 @@ class ActorSystemService () {
       serviceProps.put("actorSystemName", system.name)
       serviceRegistration = bundleContext.registerService(classOf[ActorSystem],system,serviceProps.asInstanceOf[Dictionary[String, Any]])
 
-      val actor : ActorRef = system.actorOf(ConsumingActor.props(config.parallelThreads()))
+
+
+      val actor : ActorRef = system.actorOf(Props(new ConsumingActor(createSendingActor(system, config.parallelThreads(), messageBusService))))
       actor ! Continue
       println("ActorSystem started")
     } catch {
@@ -58,6 +59,18 @@ class ActorSystemService () {
           serviceRegistration.unregister()
         }
     }
+  }
+
+  def createSendingActor(system: ActorSystem, threadCount: Int, messageBusService: MessageBusService) : ActorRef = {
+      if(threadCount > 1) {
+        val consumerProvider : List[ActorRef] =
+          for(_ <- 1.to(threadCount).toList) yield {
+            system.actorOf(Props(new OutgoingActor(messageBusService))
+              .withDispatcher("consumer-dispatcher"))}
+        consumerProvider.head
+      } else {
+        system.actorOf(Props(new OutgoingActor(messageBusService)))
+      }
   }
 
   @Deactivate
@@ -74,30 +87,18 @@ class ActorSystemService () {
     }
   }
 
-}
 
-
-object ConsumingActor {
-  def props(threadCount: Int) = Props(new ConsumingActor(threadCount))
-}
-
-class ConsumingActor(threadCount: Int) extends Actor {
-
-  var outgoingActor: ActorRef = _
-  var eventCount = 0
-
-  override def preStart {
-    if(threadCount > 1) {
-      val consumerProvider : List[ActorRef] =
-        for(_ <- 1.to(threadCount).toList) yield {
-          context.system.actorOf(Props[OutgoingActor]
-            .withDispatcher("consumer-dispatcher"))}
-      outgoingActor = consumerProvider.head
-    } else {
-      outgoingActor = context.actorOf(Props[OutgoingActor])
-    }
+  @Reference
+  def bindMessageBusService(service: MessageBusService): Unit ={
+    messageBusService = service
   }
 
+}
+
+
+class ConsumingActor(outgoingActor: ActorRef) extends Actor {
+
+  private var eventCount = 0
 
   override def receive: Receive = {
     case Continue =>
@@ -111,10 +112,10 @@ class ConsumingActor(threadCount: Int) extends Actor {
 }
 
 
-class OutgoingActor extends Actor {
+class OutgoingActor(messageBusService: MessageBusService) extends Actor {
 
   override def receive: Receive = {
     case message: Message =>
-      println("Thread '%s' - Sending message: '%s'".format(Thread.currentThread().getId, message.body))
+      messageBusService.send(message)
   }
 }

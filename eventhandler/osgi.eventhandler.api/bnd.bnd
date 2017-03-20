@@ -1,0 +1,9 @@
+-buildpath: \
+    osgi.core;version=6.0,\
+    osgi.cmpn;version=6.0,\
+    osgi.annotation;version=6.0,\
+	org.scala-lang.scala-library;version=2.12,\
+	com.typesafe.config,\
+    org.scala-lang.modules.scala-java8-compat
+
+Export-Package: osgi.eventhandler.api

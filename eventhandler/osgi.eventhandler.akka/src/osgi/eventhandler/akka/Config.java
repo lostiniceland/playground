@@ -1,4 +1,4 @@
-package playground.akka;
+package osgi.eventhandler.akka;
 
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
