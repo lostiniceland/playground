@@ -1,0 +1,16 @@
+# gogo shell only needed here because Intellij cannot handle runbnd correct
+-buildpath: \
+    osgi.core;version=6.0,\
+    osgi.cmpn;version=6.0,\
+    osgi.annotation;version=6.0,\
+	org.scala-lang.scala-library;version=2.12,\
+	com.typesafe.config,\
+    org.scala-lang.modules.scala-java8-compat,\
+    osgi.eventhandler.api,\
+    io.reactivex.rxjava2.rxjava
+
+-includeresource: resources
+-dsannotations: *
+
+Require-Capability: osgi.service;
+	filter:="(objectClass=org.osgi.service.cm.ConfigurationAdmin)";effective:=active
