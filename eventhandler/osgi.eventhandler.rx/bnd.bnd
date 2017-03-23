@@ -9,8 +9,9 @@
     osgi.eventhandler.api,\
     io.reactivex.rxjava2.rxjava
 
--includeresource: resources
 -dsannotations: *
+
+Private-Package: osgi.eventhandler.rx
 
 Require-Capability: osgi.service;
 	filter:="(objectClass=org.osgi.service.cm.ConfigurationAdmin)";effective:=active

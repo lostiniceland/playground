@@ -6,7 +6,7 @@ import org.osgi.service.component.annotations.{Activate, Component}
 class Rx {
 
   def activate(): Unit = {
-    Observable.fromArray(_)
+//    Observable.fromArray(_)
   }
 
 }
