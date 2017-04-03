@@ -18,6 +18,7 @@
 		<version.felix-scr>2.0.8</version.felix-scr>
 		<version.felix-webconsole>4.3.0</version.felix-webconsole>
 		<version.felix-webconsole-plugins-ds>2.0.6</version.felix-webconsole-plugins-ds>
+		<version.kafka>0.10.1.1</version.kafka>
 	</properties>
 
 	<dependencies>
@@ -73,6 +74,11 @@
 			<groupId>io.vertx</groupId>
 			<artifactId>vertx-core</artifactId>
 			<version>3.4.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka-clients</artifactId>
+			<version>${version.kafka}</version>
 		</dependency>
 		<!-- Stuff -->
 		<dependency>
