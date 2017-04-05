@@ -50,7 +50,7 @@ provided and can be changed during runtime (the folder will be polled every 2 se
 
 Once the application runs, a http server is available with the Felix Webconsole. 
 
-1. Open [localhost:8080/system/console/configMgr](localhost:8080/system/console/configMgr) with `admin` `admin` credentials.
+1. Open [localhost:8080/system/console/configMgr](http://localhost:8080/system/console/configMgr) with `admin` `admin` credentials.
 1. The configuration is under `Eventhandler ActorSystem`
  
 Changing the values in the Webconsole will reflect in the Fileinstall config-files.
