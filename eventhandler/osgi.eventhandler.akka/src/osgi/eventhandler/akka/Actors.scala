@@ -14,6 +14,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
 
+// FIXME Bnd annotations not working on Scala traits (workaround is using a plain Java Interface)
 //@ObjectClassDefinition(pid = Array("Test"), name = "AktorSystem",
 //  description = "Configures the ActorSystem provided by Bundle 'osgi.akka.actorsystem.demo'")
 //trait AkkaConfiguration {
@@ -51,7 +52,7 @@ class ActorSystemService () {
 
       val actor : ActorRef = system.actorOf(Props(new ConsumingActor(createSendingActor(system, config.parallelThreads(), messageBusService))))
       actor ! Continue
-      println("ActorSystem started")
+      println(s"ActorSystem '${config.actorSystemName()}' started")
     } catch {
       case t:Throwable =>
         t.printStackTrace()
@@ -63,12 +64,14 @@ class ActorSystemService () {
 
   def createSendingActor(system: ActorSystem, threadCount: Int, messageBusService: MessageBusService) : ActorRef = {
       if(threadCount > 1) {
+        println(s"Starting ${classOf[OutgoingActor].getSimpleName} with Balancing-Dispatcher in ${threadCount} Threads." )
         val consumerProvider : List[ActorRef] =
           for(_ <- 1.to(threadCount).toList) yield {
             system.actorOf(Props(new OutgoingActor(messageBusService))
               .withDispatcher("consumer-dispatcher"))}
         consumerProvider.head
       } else {
+        println(s"Starting single-threaded ${classOf[OutgoingActor].getSimpleName}")
         system.actorOf(Props(new OutgoingActor(messageBusService)))
       }
   }
@@ -81,7 +84,7 @@ class ActorSystemService () {
       }
       val x: Future[Terminated] = system.terminate()
       x.onComplete {
-        case Success(_) => system = null; println("ActorSystem stopped")
+        case Success(_) => println(s"ActorSystem '${system.name}' stopped")
         case Failure(e) => e.printStackTrace()
       }
     }
