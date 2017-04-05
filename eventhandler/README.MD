@@ -1,4 +1,4 @@
-# Eventhadler
+# Eventhandler
 
 This project is a simple demo to test several reactive Java frameworks. The usecase is a eventhandler 
 which has to distribute internal events to an external system (like Kafka).
