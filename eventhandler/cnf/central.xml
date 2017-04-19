@@ -9,7 +9,7 @@
 
 	<properties>
 		<version.scala>2.12.1</version.scala>
-		<version.akka>2.4.17</version.akka>
+		<version.akka>2.5.0</version.akka>
 		<version.felix>5.6.2</version.felix>
 		<version.felix-configadmin>1.8.14</version.felix-configadmin>
 		<version.felix-eventadmin>1.4.8</version.felix-eventadmin>

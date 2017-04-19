@@ -3,8 +3,8 @@
     osgi.core;version=6.0,\
     osgi.cmpn;version=6.0,\
     osgi.annotation;version=6.0,\
-	com.typesafe.akka.actor;version=2.4.17,\
-	com.typesafe.akka.osgi;version=2.4.17,\
+	com.typesafe.akka.actor,\
+	com.typesafe.akka.osgi,\
 	org.scala-lang.scala-library;version=2.12,\
 	com.typesafe.config,\
     org.scala-lang.modules.scala-java8-compat,\
